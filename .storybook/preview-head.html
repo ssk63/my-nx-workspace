@@ -1,0 +1,79 @@
+<script>
+  // Setup global mocks object for component dependencies
+  window.__mocks__ = {
+    '@workspace/shared': {
+      SvgIcon: function(props) {
+        return {
+          type: 'div',
+          props: {
+            'data-testid': 'mock-icon-' + props.name,
+            style: { 
+              width: '20px', 
+              height: '20px', 
+              backgroundColor: props.color || '#ccc', 
+              borderRadius: '50%' 
+            },
+            className: 'mock-svg-icon'
+          }
+        };
+      },
+      ConfirmationDialog: function(props) {
+        if (!props.isOpen) return null;
+        
+        return {
+          type: 'div',
+          props: {
+            className: 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50',
+            children: [
+              {
+                type: 'div',
+                props: {
+                  className: 'bg-white rounded-lg w-full max-w-md mx-4',
+                  children: [
+                    {
+                      type: 'div',
+                      props: {
+                        className: 'flex justify-between items-center p-4 border-b border-gray-200',
+                        children: [
+                          {
+                            type: 'h2',
+                            props: {
+                              className: 'text-xl font-medium text-gray-800',
+                              children: props.title
+                            }
+                          },
+                          {
+                            type: 'button',
+                            props: {
+                              onClick: props.onClose,
+                              children: 'Close'
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      type: 'div',
+                      props: {
+                        className: 'p-4',
+                        children: props.children
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        };
+      }
+    }
+  };
+</script>
+<style>
+  /* Global styles for Storybook */
+  body {
+    font-family: sans-serif;
+    padding: 0;
+    margin: 0;
+  }
+</style> 

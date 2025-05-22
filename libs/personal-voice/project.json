@@ -1,0 +1,9 @@
+{
+  "name": "personal-voice-lib",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/personal-voice/src",
+  "projectType": "library",
+  "tags": [],
+  "// targets": "to see all targets run: nx show project personal-voice --web",
+  "targets": {}
+}
