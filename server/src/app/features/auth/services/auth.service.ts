@@ -40,35 +40,39 @@ export async function register(data: CreateUserDto): Promise<AuthResponse> {
       }
     };
   } catch (error) {
-    console.error('Registration service error:', {
-      error,
-      message: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined
-    });
     throw error;
   }
 }
 
 export async function login(data: LoginDto): Promise<AuthResponse> {
-  const user = (await db.select().from(users).where(eq(users.email, data.email)))[0];
-  if (!user) {
-    return { status: 401, message: 'Invalid credentials' };
-  }
-  const valid = await bcrypt.compare(data.password, user.password);
-  if (!valid) {
-    return { status: 401, message: 'Invalid credentials' };
-  }
-  const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, { expiresIn: '1d' });
-  return { 
-    status: 200, 
-    token, 
-    message: 'Login successful',
-    user: {
-      id: user.id,
-      name: user.name,
-      email: user.email
+  try {
+    const user = (await db.select().from(users).where(eq(users.email, data.email)))[0];
+    
+    if (!user) {
+      return { status: 401, message: 'Invalid credentials' };
     }
-  };
+    
+    const valid = await bcrypt.compare(data.password, user.password);
+    
+    if (!valid) {
+      return { status: 401, message: 'Invalid credentials' };
+    }
+    
+    const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, { expiresIn: '1d' });
+    
+    return { 
+      status: 200, 
+      token, 
+      message: 'Login successful',
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email
+      }
+    };
+  } catch (error) {
+    throw error;
+  }
 }
 
 export async function forgotPassword(data: ForgotPasswordDto): Promise<AuthResponse> {
