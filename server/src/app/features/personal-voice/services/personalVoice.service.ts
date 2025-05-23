@@ -1,5 +1,6 @@
 import { PersonalVoiceDAO } from '../models/personalVoice.model';
 import type { CreatePersonalVoiceDto, UpdatePersonalVoiceDto } from '../types/personalVoice.types';
+import { personalVoices } from '../../../db/schemas/personalVoices.schema';
 
 class ResourceNotFoundError extends Error {
   constructor(message: string) {

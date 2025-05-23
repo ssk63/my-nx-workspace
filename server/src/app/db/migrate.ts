@@ -10,6 +10,7 @@ dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 async function runMigrations() {
   // Database connection string - trust auth method
   const connectionString = process.env['DATABASE_URL'] || 'postgres://postgres@localhost:5432/app_db';
+  console.log('Using connection string:', connectionString);
   
   // Create a postgres client for migrations
   const migrationClient = postgres(connectionString, { max: 1 });
@@ -20,10 +21,12 @@ async function runMigrations() {
   // Run migrations
   try {
     console.log('Running migrations...');
+    console.log('Migrations folder:', path.resolve(__dirname, 'migrations'));
     await migrate(db, { migrationsFolder: path.resolve(__dirname, 'migrations') });
     console.log('Migrations completed successfully');
   } catch (error) {
     console.error('Migration failed:', error);
+    throw error;
   } finally {
     // Close the connection when done
     await migrationClient.end();

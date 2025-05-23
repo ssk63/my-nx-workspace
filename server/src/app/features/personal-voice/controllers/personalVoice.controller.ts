@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from 'express';
 import { PersonalVoiceService } from '../services/personalVoice.service';
 import type { CreatePersonalVoiceDto, UpdatePersonalVoiceDto } from '../types/personalVoice.types';
+import { personalVoices } from '../../../db/schemas/personalVoices.schema';
 
 /**
  * Get all personal voices
