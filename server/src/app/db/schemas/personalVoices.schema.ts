@@ -1,8 +1,10 @@
-import { pgTable, uuid, text, boolean, json, timestamp } from 'drizzle-orm/pg-core';
+import { pgTable, uuid, text, boolean, json, timestamp, uniqueIndex } from 'drizzle-orm/pg-core';
+import { tenants } from './tenants.schema';
 
 export const personalVoices = pgTable('personal_voices', {
   id: uuid('id').defaultRandom().primaryKey(),
-  key: text('key').notNull().unique(),
+  tenantId: uuid('tenant_id').notNull().references(() => tenants.id),
+  key: text('key').notNull(),
   name: text('name').notNull(),
   enabled: boolean('enabled').notNull().default(true),
   profile: json('profile').$type<{
@@ -25,5 +27,7 @@ export const personalVoices = pgTable('personal_voices', {
     translateTo: string;
   }>().notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at').defaultNow().notNull(),
-}); 
+  updatedAt: timestamp('updated_at').defaultNow().notNull()
+}, (table) => ({
+  tenantKeyUnique: uniqueIndex('personal_voices_tenant_key_unique').on(table.tenantId, table.key)
+})); 

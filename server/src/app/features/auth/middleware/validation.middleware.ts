@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { CreateUserDto, LoginDto, ForgotPasswordDto, ResetPasswordDto } from '../models/user.model';
+import { CreateUserDto, LoginDto, ForgotPasswordDto, ResetPasswordDto } from '../types/user.types';
 
 export function validateRegistration(req: Request, res: Response, next: NextFunction): Response | void {
   const { name, email, password } = req.body as CreateUserDto;

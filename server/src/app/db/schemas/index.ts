@@ -1,3 +1,4 @@
 export * from './users.schema';
+export * from './tenants.schema';
 export * from './personalVoices.schema';
-export * from './platform-colors.schema'; 
+export * from './themes.schema'; 

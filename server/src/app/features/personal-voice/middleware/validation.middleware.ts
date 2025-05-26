@@ -62,7 +62,7 @@ export const validateUpdatePersonalVoice = (
   res: Response,
   next: NextFunction
 ): void => {
-  const { key, profile, toneOfVoice, audience, fineTuning } = req.body;
+  const { profile, toneOfVoice, audience, fineTuning } = req.body;
   const errors = [];
   
   // Validate nested objects if present

@@ -1,6 +1,16 @@
 # PersonalVoice API Service
 
-Backend API service for the PersonalVoice application. This service provides endpoints for creating, reading, updating, and deleting personal voice profiles.
+A professional, scalable, multi-tenant backend API service built with Node.js, Express, and TypeScript. This service provides a robust foundation for white-label applications, featuring advanced features like multi-tenancy, authentication, and customizable branding.
+
+## Key Features
+
+- **Multi-tenancy**: Built-in support for multiple organizations/tenants with data isolation
+- **White-label Ready**: Designed to support multiple brands and customizations
+- **Scalable Architecture**: Feature-based modular architecture for easy scaling
+- **Type Safety**: Full TypeScript implementation for robust development
+- **Modern Stack**: Built with Node.js, Express, Drizzle ORM, and PostgreSQL
+- **Containerized**: Docker support for easy deployment and development
+- **Secure**: JWT-based authentication and role-based access control
 
 ## Getting Started
 
@@ -20,6 +30,42 @@ NODE_ENV=development
 
 # Database Configuration
 DATABASE_URL=postgres://postgres@localhost:5432/app_db
+```
+
+### Available Scripts
+
+```bash
+# Start the API in production mode
+npm start
+
+# Start the API in development mode with hot reload
+npm run dev
+
+# Build the project
+npm run build
+
+# Database Management
+npm run db:generate  # Generate database migrations
+npm run db:push     # Push schema changes to database
+npm run db:studio   # Open Drizzle Studio for database management
+
+# Linting
+npm run lint
+```
+
+### Database Management
+
+The project uses Drizzle ORM for database management. Here are the available commands:
+
+```bash
+# Generate database migrations
+npm run db:generate
+
+# Push schema changes to database
+npm run db:push
+
+# Open Drizzle Studio for database management
+npm run db:studio
 ```
 
 ### Running the Database
@@ -51,7 +97,50 @@ npx nx run server:serve
 
 The API will be available at http://localhost:3001.
 
+## Multi-tenancy
+
+The application implements a robust multi-tenant architecture that allows:
+
+- Data isolation between different organizations
+- Custom branding and configurations per tenant
+- Tenant-specific feature toggles
+- Shared infrastructure with isolated data
+
+### Tenant Management
+
+```bash
+# Tenant-specific endpoints
+GET    /api/tenants              # List all tenants
+POST   /api/tenants              # Create new tenant
+GET    /api/tenants/:id          # Get tenant details
+PUT    /api/tenants/:id          # Update tenant
+DELETE /api/tenants/:id          # Delete tenant
+```
+
+## White-label Features
+
+The application supports white-labeling through:
+
+- Customizable branding per tenant
+- Tenant-specific configurations
+- Flexible theming system
+- Custom domain support
+- Brand-specific email templates
+
 ## API Endpoints
+
+### Authentication
+- `POST /api/auth/login` - User login
+- `POST /api/auth/register` - User registration
+- `POST /api/auth/refresh` - Refresh access token
+- `POST /api/auth/logout` - User logout
+
+### Tenants
+- `GET /api/tenants` - List all tenants
+- `POST /api/tenants` - Create new tenant
+- `GET /api/tenants/:id` - Get tenant details
+- `PUT /api/tenants/:id` - Update tenant
+- `DELETE /api/tenants/:id` - Delete tenant
 
 ### Personal Voices
 
@@ -60,6 +149,26 @@ The API will be available at http://localhost:3001.
 - `POST /api/personal-voices` - Create a new personal voice
 - `PUT /api/personal-voices/:id` - Update a personal voice
 - `DELETE /api/personal-voices/:id` - Delete a personal voice
+
+## Development Guidelines
+
+### Multi-tenant Development
+
+When developing new features:
+
+1. Always consider tenant context
+2. Use tenant middleware for data isolation
+3. Implement tenant-specific configurations
+4. Follow the established data isolation patterns
+
+### White-label Implementation
+
+For white-label features:
+
+1. Use the configuration service for tenant-specific settings
+2. Implement theme variables for styling
+3. Use the branding service for tenant-specific assets
+4. Follow the established theming patterns
 
 ## Project Structure
 
@@ -129,4 +238,22 @@ This project is organized using a feature-based architecture:
 
 ## Error Handling
 
-Errors are handled at the service layer and propagated up to controllers, which pass them to the error middleware. The error middleware formats errors appropriately for API responses. 
+Errors are handled at the service layer and propagated up to controllers, which pass them to the error middleware. The error middleware formats errors appropriately for API responses.
+
+## Dependencies
+
+### Main Dependencies
+- Express.js - Web framework
+- Drizzle ORM - Database ORM with multi-tenant support
+- PostgreSQL - Robust multi-tenant database
+- JWT - Secure authentication
+- Nodemailer - Customizable email system
+- CORS - Cross-origin resource sharing
+- bcryptjs - Secure password hashing
+
+### Development Dependencies
+- TypeScript - Type safety
+- ts-node-dev - Development server with hot reload
+- Drizzle Kit - Database migration tools
+- ESLint - Code linting
+- Various type definitions for TypeScript 

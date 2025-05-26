@@ -6,10 +6,12 @@ import * as path from 'path';
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 export default defineConfig({
-  schema: './src/app/db/schema.ts',
+  schema: './src/app/db/schemas/index.ts',
   out: './src/app/db/migrations',
   driver: 'pg',
   dbCredentials: {
-    connectionString: process.env.DATABASE_URL || 'postgres://postgres@localhost:5432/app_db'
-  }
+    connectionString: process.env.DATABASE_URL || 'postgres://sathishkumar@localhost:5432/my_nx_workspace'
+  },
+  verbose: true,
+  strict: true
 }); 

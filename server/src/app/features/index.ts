@@ -1,15 +1,17 @@
 import { Router } from 'express';
-import { personalVoiceRouter } from './personal-voice';
+import { tenantRouter } from './tenants';
 import { authRouter } from './auth';
-import platformColorsRouter from './platform/routes/platform-colors.routes';
+import { personalVoiceRouter } from './personal-voice';
+import { themeRouter } from './themes';
 
 // Main features router
 const featuresRouter = Router();
 
-// Register feature routers
+// Register routes
+featuresRouter.use('/tenants', tenantRouter);
 featuresRouter.use('/auth', authRouter);
-featuresRouter.use(personalVoiceRouter);
-featuresRouter.use('/platform/colors', platformColorsRouter);
+featuresRouter.use('/personal-voices', personalVoiceRouter);
+featuresRouter.use('/themes', themeRouter);
 
 // Export the main features router
 export default featuresRouter;

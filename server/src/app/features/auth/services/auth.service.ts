@@ -2,10 +2,10 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import { db } from '../../../db';
-import { users } from '../../../db/schemas/users.schema';
+import { users, ROLES } from '../../../db/schemas/users.schema';
 import { sendPasswordResetEmail } from '../../../services/email.service';
 import { eq, and, gt } from 'drizzle-orm';
-import { CreateUserDto, LoginDto, ForgotPasswordDto, ResetPasswordDto, AuthResponse } from '../models/user.model';
+import { CreateUserDto, LoginDto, ForgotPasswordDto, ResetPasswordDto, AuthResponse } from '../types/user.types';
 
 const JWT_SECRET = process.env['JWT_SECRET'] || 'changeme';
 
@@ -23,7 +23,9 @@ export async function register(data: CreateUserDto): Promise<AuthResponse> {
   const [newUser] = await db.insert(users).values({ 
     name: data.name, 
     email: data.email, 
-    password: hashed 
+    password: hashed,
+    tenantId: data.tenantId,
+    role: ROLES.MEMBER
   }).returning();
 
   const token = jwt.sign({ userId: newUser.id, email: newUser.email }, JWT_SECRET, { expiresIn: '1d' });
