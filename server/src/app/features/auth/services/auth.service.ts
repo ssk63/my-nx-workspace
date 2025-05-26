@@ -10,69 +10,61 @@ import { CreateUserDto, LoginDto, ForgotPasswordDto, ResetPasswordDto, AuthRespo
 const JWT_SECRET = process.env['JWT_SECRET'] || 'changeme';
 
 export async function register(data: CreateUserDto): Promise<AuthResponse> {
-  try {
-    if (!data.name || !data.email || !data.password) {
-      throw new Error('Missing required fields');
-    }
-
-    const existing = await db.select().from(users).where(eq(users.email, data.email));
-    if (existing.length > 0) {
-      return { status: 409, message: 'Email already registered' };
-    }
-
-    const hashed = await bcrypt.hash(data.password, 10);
-    const [newUser] = await db.insert(users).values({ 
-      name: data.name, 
-      email: data.email, 
-      password: hashed 
-    }).returning();
-
-    const token = jwt.sign({ userId: newUser.id, email: newUser.email }, JWT_SECRET, { expiresIn: '1d' });
-    
-    return { 
-      status: 201, 
-      message: 'User registered successfully',
-      token,
-      user: {
-        id: newUser.id,
-        name: newUser.name,
-        email: newUser.email
-      }
-    };
-  } catch (error) {
-    throw error;
+  if (!data.name || !data.email || !data.password) {
+    throw new Error('Missing required fields');
   }
+
+  const existing = await db.select().from(users).where(eq(users.email, data.email));
+  if (existing.length > 0) {
+    return { status: 409, message: 'Email already registered' };
+  }
+
+  const hashed = await bcrypt.hash(data.password, 10);
+  const [newUser] = await db.insert(users).values({ 
+    name: data.name, 
+    email: data.email, 
+    password: hashed 
+  }).returning();
+
+  const token = jwt.sign({ userId: newUser.id, email: newUser.email }, JWT_SECRET, { expiresIn: '1d' });
+  
+  return { 
+    status: 201, 
+    message: 'User registered successfully',
+    token,
+    user: {
+      id: newUser.id,
+      name: newUser.name,
+      email: newUser.email
+    }
+  };
 }
 
 export async function login(data: LoginDto): Promise<AuthResponse> {
-  try {
-    const user = (await db.select().from(users).where(eq(users.email, data.email)))[0];
-    
-    if (!user) {
-      return { status: 401, message: 'Invalid credentials' };
-    }
-    
-    const valid = await bcrypt.compare(data.password, user.password);
-    
-    if (!valid) {
-      return { status: 401, message: 'Invalid credentials' };
-    }
-    
-    const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, { expiresIn: '1d' });
-    
-    return { 
-      status: 200, 
-      token, 
-      message: 'Login successful',
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email
-      }
-    };
-  } catch (error) {
-    throw error;
+  const user = (await db.select().from(users).where(eq(users.email, data.email)))[0];
+  
+  if (!user) {
+    return { status: 401, message: 'Invalid credentials' };
   }
+  
+  const valid = await bcrypt.compare(data.password, user.password);
+  
+  if (!valid) {
+    return { status: 401, message: 'Invalid credentials' };
+  }
+  
+  const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, { expiresIn: '1d' });
+  
+  return { 
+    status: 200, 
+    token, 
+    message: 'Login successful',
+    user: {
+      id: user.id,
+      name: user.name,
+      email: user.email
+    }
+  };
 }
 
 export async function forgotPassword(data: ForgotPasswordDto): Promise<AuthResponse> {
