@@ -1,9 +1,20 @@
 {
-  "name": "personal-voice-lib",
+  "name": "personal-voice",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/personal-voice/src",
   "projectType": "library",
   "tags": [],
   "// targets": "to see all targets run: nx show project personal-voice --web",
-  "targets": {}
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/personal-voice",
+        "main": "libs/personal-voice/src/index.ts",
+        "tsConfig": "libs/personal-voice/tsconfig.json",
+        "assets": ["libs/personal-voice/*.md"]
+      }
+    }
+  }
 }

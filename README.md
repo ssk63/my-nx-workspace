@@ -1,98 +1,66 @@
-# My NX Workspace
+# My Nx Workspace
 
-A comprehensive fullstack application built with NX workspace, featuring a frontend with shared components and a personal voice feature, and a backend API service.
+This is a monorepo built with Nx containing a web application and server.
 
-## Project Structure
+## Prerequisites
 
-```
-my-nx-workspace/
-├── apps/
-│   └── server/                # Legacy server directory (not in use)
-├── server/                    # Backend API service
-│   ├── src/                   # Source code
-│   │   ├── app/               # Application components
-│   │   ├── server.ts          # Server configuration
-│   │   └── main.ts            # Entry point
-│   ├── docker-compose.yml     # Database setup
-│   └── ...
-├── libs/
-│   ├── shared/                # Shared UI components and icons
-│   │   └── src/               # Shared library source code
-│   └── personal-voice/        # Personal Voice feature library
-│       └── src/               # Personal Voice source code
-├── src/                       # Frontend application
-│   └── app/                   # Main application code
-└── ... (configuration files)
-```
+- Node.js (v16 or later)
+- npm (v7 or later)
 
 ## Getting Started
 
-### Prerequisites
-
-- Node.js 16+
-- npm or yarn
-- Docker (for running PostgreSQL)
-
-### Installation
-
-1. Clone the repository:
-```bash
-git clone <repository-url>
-cd my-nx-workspace
-```
-
-2. Install dependencies:
+1. Install dependencies:
 ```bash
 npm install
 ```
 
-### Starting the Backend
-
-1. Make sure Docker is running on your machine
-
-2. Start the PostgreSQL database:
+2. Run the web application:
 ```bash
-npm run db:up
-# or
-cd server && docker-compose up -d
+npx nx serve web
 ```
+The web app will be available at http://localhost:4200
 
-3. Start the API server:
+3. Run the server:
 ```bash
-npm run server:dev
-# or
-npx nx run server:serve
+npx nx serve server
 ```
+The server will be available at http://localhost:3000
 
-The API will be available at http://localhost:3001.
+## Project Structure
 
-### Starting the Frontend
-
-```bash
-npm run start
-# or
-npx nx serve
-```
-
-The frontend will be available at http://localhost:4200.
+- `apps/web` - React web application
+- `apps/server` - Backend server
+- `libs/personal-voice` - Shared library for personal voice functionality
+- `libs/shared` - Common utilities and components
 
 ## Development
 
-### Adding a New Feature
+- The web app uses Vite for development and building
+- The server is built with Node.js
+- Both applications support hot reloading during development
 
-1. Create a new library in the libs directory:
+## Building
+
+To build the applications:
+
 ```bash
-npx nx generate @nx/react:library my-feature
+# Build web app
+npx nx build web
+
+# Build server
+npx nx build server
 ```
 
-2. Import and use the library in your frontend application.
+## Testing
 
-### Running Tests
+To run tests:
 
 ```bash
-npm run test
-# or
-npx nx test
+# Run web app tests
+npx nx test web
+
+# Run server tests
+npx nx test server
 ```
 
 ## Features

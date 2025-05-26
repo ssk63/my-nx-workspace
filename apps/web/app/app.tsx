@@ -1,5 +1,6 @@
+import React from 'react';
 import { PersonalVoice, FormProvider } from '@workspace/personal-voice';
-import '../styles.css';
+import '../src/styles/styles.css';
 
 export function App() {
   return (
@@ -9,4 +10,4 @@ export function App() {
   );
 }
 
-export default App;
+export default App; 

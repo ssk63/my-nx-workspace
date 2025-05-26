@@ -1,9 +1,20 @@
 {
-  "name": "shared-lib",
+  "name": "shared",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/shared/src",
   "projectType": "library",
   "tags": [],
   "// targets": "to see all targets run: nx show project shared --web",
-  "targets": {}
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/shared",
+        "main": "libs/shared/src/index.ts",
+        "tsConfig": "libs/shared/tsconfig.lib.json",
+        "assets": ["libs/shared/*.md"]
+      }
+    }
+  }
 }
