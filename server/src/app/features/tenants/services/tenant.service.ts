@@ -1,6 +1,6 @@
 import { db } from '../../../db';
 import { tenants } from '../../../db/schemas/tenants.schema';
-import { users, ROLES, Role } from '../../../db/schemas/users.schema';
+import { userTenants, ROLES, Role } from '../../../db/schemas/auth.schema';
 import { eq, and } from 'drizzle-orm';
 import { 
   Tenant, 
@@ -157,11 +157,11 @@ export class TenantService {
   static async getTenantUser(userId: string, tenantId: string): Promise<TenantServiceResponse<TenantUser>> {
     try {
       const result = await db.select()
-        .from(users)
+        .from(userTenants)
         .where(
           and(
-            eq(users.id, userId),
-            eq(users.tenantId, tenantId)
+            eq(userTenants.userId, userId),
+            eq(userTenants.tenantId, tenantId)
           )
         )
         .limit(1);
@@ -177,7 +177,7 @@ export class TenantService {
       return {
         success: true,
         data: {
-          id: result[0].id,
+          id: result[0].userId,
           role,
           hasRole: (r: Role) => role === r,
           hasAnyRole: (roles: Role[]) => roles.includes(role)

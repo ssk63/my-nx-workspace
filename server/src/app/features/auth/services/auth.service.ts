@@ -2,15 +2,16 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import { db } from '../../../db';
-import { users, ROLES } from '../../../db/schemas/users.schema';
-import { sendPasswordResetEmail } from '../../../services/email.service';
+import { users, userTenants, ROLES } from '../../../db/schemas/auth.schema';
+import { sendPasswordResetEmail } from './email.service';
 import { eq, and, gt } from 'drizzle-orm';
-import { CreateUserDto, LoginDto, ForgotPasswordDto, ResetPasswordDto, AuthResponse } from '../types/user.types';
+import { LoginDto, RegisterDto, ForgotPasswordDto, ResetPasswordDto, AuthResponse, User } from '../types/user.types';
 
 const JWT_SECRET = process.env['JWT_SECRET'] || 'changeme';
+const JWT_REFRESH_SECRET = process.env['JWT_REFRESH_SECRET'] || 'refresh_me';
 
-export async function register(data: CreateUserDto): Promise<AuthResponse> {
-  if (!data.name || !data.email || !data.password) {
+export async function register(data: RegisterDto): Promise<AuthResponse> {
+  if (!data.email || !data.password || !data.firstName || !data.lastName || !data.tenantId) {
     throw new Error('Missing required fields');
   }
 
@@ -20,25 +21,36 @@ export async function register(data: CreateUserDto): Promise<AuthResponse> {
   }
 
   const hashed = await bcrypt.hash(data.password, 10);
+  
+  // Create user
   const [newUser] = await db.insert(users).values({ 
-    name: data.name, 
+    firstName: data.firstName,
+    lastName: data.lastName,
     email: data.email, 
     password: hashed,
-    tenantId: data.tenantId,
     role: ROLES.MEMBER
   }).returning();
 
+  // Create user-tenant relationship
+  await db.insert(userTenants).values({
+    userId: newUser.id,
+    tenantId: data.tenantId,
+    role: ROLES.MEMBER,
+    isDefault: true
+  });
+
+  // Get user with tenants
+  const userWithTenants = await getUserWithTenants(newUser.id);
+
   const token = jwt.sign({ userId: newUser.id, email: newUser.email }, JWT_SECRET, { expiresIn: '1d' });
+  const refreshToken = jwt.sign({ userId: newUser.id }, JWT_REFRESH_SECRET, { expiresIn: '7d' });
   
   return { 
     status: 201, 
     message: 'User registered successfully',
     token,
-    user: {
-      id: newUser.id,
-      name: newUser.name,
-      email: newUser.email
-    }
+    refreshToken,
+    user: userWithTenants
   };
 }
 
@@ -54,18 +66,19 @@ export async function login(data: LoginDto): Promise<AuthResponse> {
   if (!valid) {
     return { status: 401, message: 'Invalid credentials' };
   }
+
+  // Get user with tenants
+  const userWithTenants = await getUserWithTenants(user.id);
   
   const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, { expiresIn: '1d' });
+  const refreshToken = jwt.sign({ userId: user.id }, JWT_REFRESH_SECRET, { expiresIn: '7d' });
   
   return { 
     status: 200, 
     token, 
+    refreshToken,
     message: 'Login successful',
-    user: {
-      id: user.id,
-      name: user.name,
-      email: user.email
-    }
+    user: userWithTenants
   };
 }
 
@@ -97,4 +110,50 @@ export async function resetPassword(data: ResetPasswordDto): Promise<AuthRespons
     .set({ password: hashed, resetToken: null, resetTokenExpires: null })
     .where(eq(users.id, user.id));
   return { status: 200, message: 'Password has been reset successfully' };
+}
+
+export async function refreshToken(token: string): Promise<AuthResponse> {
+  try {
+    const decoded = jwt.verify(token, JWT_REFRESH_SECRET) as { userId: string };
+    const user = (await db.select().from(users).where(eq(users.id, decoded.userId)))[0];
+
+    if (!user) {
+      return { status: 401, message: 'Invalid refresh token' };
+    }
+
+    const userWithTenants = await getUserWithTenants(user.id);
+    const newToken = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, { expiresIn: '1d' });
+    const newRefreshToken = jwt.sign({ userId: user.id }, JWT_REFRESH_SECRET, { expiresIn: '7d' });
+
+    return {
+      status: 200,
+      message: 'Token refreshed successfully',
+      token: newToken,
+      refreshToken: newRefreshToken,
+      user: userWithTenants
+    };
+  } catch (error) {
+    return { status: 401, message: 'Invalid refresh token' };
+  }
+}
+
+async function getUserWithTenants(userId: string): Promise<User> {
+  const user = (await db.select().from(users).where(eq(users.id, userId)))[0];
+  const userTenantRelations = await db.select().from(userTenants).where(eq(userTenants.userId, userId));
+
+  return {
+    id: user.id,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    email: user.email,
+    role: user.role,
+    tenants: userTenantRelations.map(ut => ({
+      id: ut.id,
+      tenantId: ut.tenantId,
+      role: ut.role,
+      isDefault: ut.isDefault
+    })),
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt
+  };
 } 

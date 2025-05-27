@@ -12,24 +12,135 @@ A professional, scalable, multi-tenant backend API service built with Node.js, E
 - **Containerized**: Docker support for easy deployment and development
 - **Secure**: JWT-based authentication and role-based access control
 
+## Authentication Flow
+
+The server implements a multi-tenant authentication system with the following features:
+
+### User Management
+- User registration with email and password
+- User login with JWT authentication
+- Password reset functionality
+- Role-based access control (Admin, Member)
+
+### Tenant Management
+- Multi-tenant support with tenant-specific user roles
+- Tenant creation and management
+- Tenant-specific settings and configurations
+
+### Authentication Endpoints
+
+#### Register
+```http
+POST /api/auth/register
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "password123",
+  "firstName": "John",
+  "lastName": "Doe",
+  "tenantId": "uuid-of-tenant"
+}
+```
+
+#### Login
+```http
+POST /api/auth/login
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "password123",
+  "tenantId": "uuid-of-tenant"
+}
+```
+
+#### Refresh Token
+```http
+POST /api/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "your-refresh-token"
+}
+```
+
+#### Forgot Password
+```http
+POST /api/auth/forgot-password
+Content-Type: application/json
+
+{
+  "email": "user@example.com"
+}
+```
+
+#### Reset Password
+```http
+POST /api/auth/reset-password
+Content-Type: application/json
+
+{
+  "token": "reset-token",
+  "password": "new-password"
+}
+```
+
+## Database Schema
+
+### Users Table
+- id (UUID, Primary Key)
+- email (String, Unique)
+- password (String, Hashed)
+- firstName (String)
+- lastName (String)
+- role (Enum: ADMIN, MEMBER)
+- resetToken (String, Nullable)
+- resetTokenExpires (Timestamp, Nullable)
+- createdAt (Timestamp)
+- updatedAt (Timestamp)
+
+### Tenants Table
+- id (UUID, Primary Key)
+- name (String)
+- slug (String, Unique)
+- isActive (Boolean)
+- settings (JSON)
+- createdAt (Timestamp)
+- updatedAt (Timestamp)
+
+### UserTenants Table (Junction)
+- id (UUID, Primary Key)
+- userId (UUID, Foreign Key)
+- tenantId (UUID, Foreign Key)
+- role (Enum: ADMIN, MEMBER)
+- isDefault (Boolean)
+- createdAt (Timestamp)
+- updatedAt (Timestamp)
+
 ## Getting Started
 
 ### Prerequisites
 
 - Node.js 16+
 - PostgreSQL 15+
+- Docker (optional, for running PostgreSQL)
 
 ### Environment Setup
 
 Create a `.env` file in the root of this directory with the following variables:
 
-```
+```env
 # Server Configuration
 PORT=3001
 NODE_ENV=development
 
 # Database Configuration
-DATABASE_URL=postgres://postgres@localhost:5432/app_db
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=sathishkumar
+DB_NAME=app_db
+DATABASE_URL=postgres://sathishkumar@localhost:5432/app_db
 ```
 
 ### Available Scripts
@@ -58,14 +169,35 @@ npm run lint
 The project uses Drizzle ORM for database management. Here are the available commands:
 
 ```bash
+# Start PostgreSQL with Docker
+npm run db:up
+# or
+npx nx run server:docker:up
+
+# Stop PostgreSQL
+npm run db:down
+# or
+npx nx run server:docker:down
+
 # Generate database migrations
 npm run db:generate
+# or
+cd server && npx drizzle-kit generate:pg
 
 # Push schema changes to database
 npm run db:push
+# or
+cd server && npx drizzle-kit push:pg
 
 # Open Drizzle Studio for database management
 npm run db:studio
+# or
+cd server && npx drizzle-kit studio
+
+# Run database migrations
+npm run db:migrate
+# or
+cd server && npx ts-node src/app/db/migrate.ts
 ```
 
 ### Running the Database

@@ -7,7 +7,7 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 // Database connection string - trust auth method
-const connectionString = process.env['DATABASE_URL'] || 'postgres://postgres@localhost:5432/app_db';
+const connectionString = process.env['DATABASE_URL'] || 'postgres://sathishkumar@localhost:5432/app_db';
 
 // Create a postgres client
 const client = postgres(connectionString);

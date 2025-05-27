@@ -1,26 +1,20 @@
 import React from 'react';
 import { StatusBar, StatusBarStyle } from 'expo-status-bar';
-import { View, Text, StyleSheet } from 'react-native';
+import { ThemeProvider } from './src/contexts/ThemeContext';
+import { TenantProvider } from './src/contexts/TenantContext';
+import { AuthProvider } from './src/contexts/AuthContext';
+import RootNavigator from './src/navigation';
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Welcome to Your App</Text>
-      <StatusBar style={'light' as StatusBarStyle} />
-    </View>
+    <ThemeProvider>
+      <TenantProvider>
+        <AuthProvider>
+          <RootNavigator />
+          <StatusBar style={'dark-content' as StatusBarStyle} />
+        </AuthProvider>
+      </TenantProvider>
+    </ThemeProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  text: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-});
 

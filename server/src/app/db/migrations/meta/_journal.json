@@ -1,19 +1,12 @@
 {
-  "version": "7",
-  "dialect": "postgresql",
+  "version": "5",
+  "dialect": "pg",
   "entries": [
     {
-      "idx": 1,
+      "idx": 0,
       "version": "7",
-      "when": 1747644404571,
-      "tag": "0001_users",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1748264190553,
-      "tag": "0002_wise_natasha_romanoff",
+      "when": 1748349931262,
+      "tag": "0000_stormy_thor_girl",
       "breakpoints": true
     }
   ]

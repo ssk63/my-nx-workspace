@@ -1,7 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { ThemeService } from '../services/theme.service';
 import { authenticate } from '../../auth/middleware/auth.middleware';
-import { ROLES } from '../../../db/schemas/users.schema';
+import { ROLES } from '../../../db/schemas/auth.schema';
 import { Tenant } from '../../tenants/types/tenant.types';
 
 declare module 'express' {

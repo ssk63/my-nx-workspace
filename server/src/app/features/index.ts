@@ -1,21 +1,14 @@
 import { Router } from 'express';
-import { tenantRouter } from './tenants';
-import { authRouter } from './auth';
-import { personalVoiceRouter } from './personal-voice';
-import { themeRouter } from './themes';
+import authRoutes from './auth/routes/auth.routes';
+import tenantRoutes from './tenants/routes/tenant.routes';
+import personalVoiceRoutes from './personal-voice/routes/personalVoice.routes';
+import themeRoutes from './themes/routes/theme.routes';
 
-// Main features router
-const featuresRouter = Router();
+const router = Router();
 
-// Register routes
-featuresRouter.use('/tenants', tenantRouter);
-featuresRouter.use('/auth', authRouter);
-featuresRouter.use('/personal-voices', personalVoiceRouter);
-featuresRouter.use('/themes', themeRouter);
+router.use('/auth', authRoutes);
+router.use('/tenants', tenantRoutes);
+router.use('/personal-voices', personalVoiceRoutes);
+router.use('/themes', themeRoutes);
 
-// Export the main features router
-export default featuresRouter;
-
-// Export individual features for use elsewhere
-export * from './personal-voice';
-export * from './auth'; 
+export default router; 

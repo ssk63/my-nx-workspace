@@ -1,46 +1,64 @@
-import { Router, Request, Response, NextFunction } from 'express';
-import { register, login, forgotPassword, resetPassword } from '../services/auth.service';
-import { validateRegistration, validateLogin, validateForgotPassword, validateResetPassword } from '../middleware/validation.middleware';
+import { Router } from 'express';
+import { register, login, refreshToken } from '../services/auth.service';
+import { z } from 'zod';
 
 const router = Router();
 
-// Login route
-router.post('/login', validateLogin, async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const result = await login(req.body);
-    res.status(result.status).json(result);
-  } catch (error) {
-    next(error);
-  }
+// Validation schemas
+const registerSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(6),
+  firstName: z.string(),
+  lastName: z.string(),
+  tenantId: z.string().uuid(),
+});
+
+const loginSchema = z.object({
+  email: z.string().email(),
+  password: z.string(),
 });
 
 // Register route
-router.post('/register', validateRegistration, async (req: Request, res: Response, next: NextFunction) => {
+router.post('/register', async (req, res) => {
   try {
-    const result = await register(req.body);
-    res.status(result.status).json(result);
+    const data = registerSchema.parse(req.body);
+    const result = await register(data);
+    res.json(result);
   } catch (error) {
-    next(error);
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ error: error.errors });
+    } else {
+      res.status(400).json({ error: (error as Error).message });
+    }
   }
 });
 
-// Forgot password route
-router.post('/forgot-password', validateForgotPassword, async (req: Request, res: Response, next: NextFunction) => {
+// Login route
+router.post('/login', async (req, res) => {
   try {
-    const result = await forgotPassword(req.body);
-    res.status(result.status).json(result);
+    const data = loginSchema.parse(req.body);
+    const result = await login(data);
+    res.json(result);
   } catch (error) {
-    next(error);
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ error: error.errors });
+    } else {
+      res.status(400).json({ error: (error as Error).message });
+    }
   }
 });
 
-// Reset password route
-router.post('/reset-password', validateResetPassword, async (req: Request, res: Response, next: NextFunction) => {
+// Refresh token route
+router.post('/refresh', async (req, res) => {
   try {
-    const result = await resetPassword(req.body);
-    res.status(result.status).json(result);
+    const { refreshToken: token } = req.body;
+    if (!token) {
+      throw new Error('Refresh token is required');
+    }
+    const result = await refreshToken(token);
+    res.json(result);
   } catch (error) {
-    next(error);
+    res.status(400).json({ error: (error as Error).message });
   }
 });
 

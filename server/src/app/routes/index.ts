@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import featuresRouter from '../features';
+import featuresRouter from '../features/index';
 
 const router = Router();
 

@@ -1,37 +1,37 @@
-import { drizzle } from 'drizzle-orm/postgres-js';
-import { migrate } from 'drizzle-orm/postgres-js/migrator';
-import postgres from 'postgres';
+import { drizzle } from 'drizzle-orm/node-postgres';
+import { migrate } from 'drizzle-orm/node-postgres/migrator';
+import { Pool } from 'pg';
 import * as dotenv from 'dotenv';
 import * as path from 'path';
 
 // Load environment variables
-dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
+dotenv.config();
 
-async function runMigrations() {
-  // Database connection string - trust auth method
-  const connectionString = process.env['DATABASE_URL'] || 'postgres://postgres@localhost:5432/app_db';
-  console.log('Using connection string:', connectionString);
-  
-  // Create a postgres client for migrations
-  const migrationClient = postgres(connectionString, { max: 1 });
-  
-  // Create a migration instance
-  const db = drizzle(migrationClient);
-  
-  // Run migrations
-  try {
-    console.log('Running migrations...');
-    console.log('Migrations folder:', path.resolve(__dirname, 'migrations'));
-    await migrate(db, { migrationsFolder: path.resolve(__dirname, 'migrations') });
-    console.log('Migrations completed successfully');
-  } catch (error) {
-    console.error('Migration failed:', error);
-    throw error;
-  } finally {
-    // Close the connection when done
-    await migrationClient.end();
-  }
+async function main() {
+  const pool = new Pool({
+    host: process.env['DB_HOST'] || 'localhost',
+    port: Number(process.env['DB_PORT']) || 5432,
+    user: process.env['DB_USER'] || 'sathishkumar',
+    database: process.env['DB_NAME'] || 'app_db'
+  });
+
+  const db = drizzle(pool);
+
+  console.log('Running migrations...');
+
+  // Get the absolute path to the migrations folder
+  const migrationsFolder = path.resolve(__dirname, 'migrations');
+  console.log('Migrations folder:', migrationsFolder);
+
+  await migrate(db, { migrationsFolder });
+
+  console.log('Migrations completed successfully');
+
+  await pool.end();
 }
 
-// Run migrations
-runMigrations(); 
+main().catch((err) => {
+  console.error('Migration failed');
+  console.error(err);
+  process.exit(1);
+}); 

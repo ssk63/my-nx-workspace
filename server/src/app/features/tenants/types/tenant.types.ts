@@ -1,4 +1,4 @@
-import { Role } from '../../../db/schemas/users.schema';
+import { Role } from '../../../db/schemas/auth.schema';
 
 export interface Tenant {
   id: string;

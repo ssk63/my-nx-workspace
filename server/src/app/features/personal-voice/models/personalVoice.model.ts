@@ -1,5 +1,5 @@
 import { db } from '../../../db';
-import { personalVoices } from '../../../db/schema';
+import { personalVoices } from '../../../db/schemas/personalVoices.schema';
 import { eq, and } from 'drizzle-orm';
 import type { CreatePersonalVoiceDto, UpdatePersonalVoiceDto } from '../types/personalVoice.types';
 
