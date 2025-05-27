@@ -1,27 +1,47 @@
-import { Router } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import { register, login, forgotPassword, resetPassword } from '../services/auth.service';
 import { validateRegistration, validateLogin, validateForgotPassword, validateResetPassword } from '../middleware/validation.middleware';
 
-const authRouter = Router();
+const router = Router();
 
-authRouter.post('/register', validateRegistration, async (req, res) => {
-  const result = await register(req.body);
-  res.status(result.status).json(result);
+// Login route
+router.post('/login', validateLogin, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const result = await login(req.body);
+    res.status(result.status).json(result);
+  } catch (error) {
+    next(error);
+  }
 });
 
-authRouter.post('/login', validateLogin, async (req, res) => {
-  const result = await login(req.body);
-  res.status(result.status).json(result);
+// Register route
+router.post('/register', validateRegistration, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const result = await register(req.body);
+    res.status(result.status).json(result);
+  } catch (error) {
+    next(error);
+  }
 });
 
-authRouter.post('/forgot-password', validateForgotPassword, async (req, res) => {
-  const result = await forgotPassword(req.body);
-  res.status(result.status).json(result);
+// Forgot password route
+router.post('/forgot-password', validateForgotPassword, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const result = await forgotPassword(req.body);
+    res.status(result.status).json(result);
+  } catch (error) {
+    next(error);
+  }
 });
 
-authRouter.post('/reset-password', validateResetPassword, async (req, res) => {
-  const result = await resetPassword(req.body);
-  res.status(result.status).json(result);
+// Reset password route
+router.post('/reset-password', validateResetPassword, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const result = await resetPassword(req.body);
+    res.status(result.status).json(result);
+  } catch (error) {
+    next(error);
+  }
 });
 
-export default authRouter; 
+export default router; 

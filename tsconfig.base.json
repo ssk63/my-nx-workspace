@@ -15,7 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "resolveJsonModule": true,
-    "types": ["jest"],
+    "types": ["jest", "node"],
     "paths": {
       "@workspace/personal-voice": ["libs/personal-voice/src/index.ts"],
       "@workspace/shared": ["libs/shared/src/index.ts"]

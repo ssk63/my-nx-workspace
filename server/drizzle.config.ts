@@ -1,17 +1,18 @@
+import type { Config } from 'drizzle-kit';
 import * as dotenv from 'dotenv';
-import { defineConfig } from 'drizzle-kit';
-import * as path from 'path';
 
 // Load environment variables
-dotenv.config({ path: path.resolve(__dirname, '.env') });
+dotenv.config();
 
-export default defineConfig({
-  schema: './src/app/db/schemas/index.ts',
+export default {
+  schema: './src/app/db/schemas/*',
   out: './src/app/db/migrations',
-  driver: 'pg',
   dbCredentials: {
-    connectionString: process.env.DATABASE_URL || 'postgres://sathishkumar@localhost:5432/my_nx_workspace'
+    host: process.env.DB_HOST || 'localhost',
+    port: Number(process.env.DB_PORT) || 5432,
+    user: process.env.DB_USER || 'postgres',
+    password: process.env.DB_PASSWORD || 'postgres',
+    database: process.env.DB_NAME || 'app_db',
   },
-  verbose: true,
-  strict: true
-}); 
+  dialect: 'postgresql',
+} satisfies Config; 
