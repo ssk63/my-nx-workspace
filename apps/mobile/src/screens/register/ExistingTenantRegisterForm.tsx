@@ -23,17 +23,27 @@ const ExistingTenantRegisterForm: React.FC<Props> = ({ onBack, onSuccess }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  const validate = () => {
+    if (!firstName.trim() || !lastName.trim() || !email.trim() || !password || !confirmPassword || !tenantCode.trim()) {
+      setError('All fields are required.');
+      return false;
+    }
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+      setError('Please enter a valid email address.');
+      return false;
+    }
+    if (password !== confirmPassword) {
+      setError('Passwords do not match.');
+      return false;
+    }
+    setError(null);
+    return true;
+  };
+
   const handleRegister = async () => {
     setError(null);
     setSuccess(false);
-    if (password !== confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
-    if (!tenantCode) {
-      setError('Tenant code is required');
-      return;
-    }
+    if (!validate()) return;
     setLoading(true);
     try {
       const res = await fetch(`${API_URL}/auth/register`, {
