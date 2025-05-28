@@ -19,7 +19,7 @@ import { DEFAULT_THEME, API_URL } from '../config';
 const TenantSelectionScreen = () => {
   const { tenants, setTenant, loading } = useTenant();
   const { setTheme } = useTheme();
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [themeLoading, setThemeLoading] = useState(false);
   const [themeError, setThemeError] = useState<string | null>(null);
@@ -49,12 +49,14 @@ const TenantSelectionScreen = () => {
 
   useEffect(() => {
     if (!loading && tenants.length === 1 && token) {
-      setTenant(tenants[0]);
-      fetchAndSetTheme(tenants[0].slug, token).then(() => {
+      const item = tenants[0];
+      const userTenant = user?.tenants?.find(t => t.id === item.id);
+      setTenant({ ...item, ...userTenant });
+      fetchAndSetTheme(item.slug, token).then(() => {
         navigation.navigate('MainTab');
       });
     }
-  }, [loading, tenants, token, setTenant, fetchAndSetTheme, navigation]);
+  }, [loading, tenants, token, setTenant, fetchAndSetTheme, navigation, user]);
 
   if (loading || themeLoading) {
     return (
@@ -75,7 +77,8 @@ const TenantSelectionScreen = () => {
         renderItem={({ item }) => (
           <TouchableOpacity style={styles.tenantBtn} onPress={async () => {
             if (!token) return;
-            await setTenant(item);
+            const userTenant = user?.tenants?.find(t => t.id === item.id);
+            await setTenant({ ...item, ...userTenant });
             await fetchAndSetTheme(item.slug, token);
             if (!themeError) navigation.navigate('MainTab');
           }}>

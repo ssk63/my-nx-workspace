@@ -9,6 +9,7 @@ export interface Tenant {
   settings: TenantSettings;
   createdAt: Date;
   updatedAt: Date;
+  role?: string;
 }
 
 export interface TenantSettings {

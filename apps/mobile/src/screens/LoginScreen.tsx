@@ -26,8 +26,26 @@ export const LoginScreen: React.FC = () => {
   const { login, loading, error, clearError } = useAuth();
   const { theme } = useTheme();
   const navigation = useNavigation<LoginScreenNavigationProp>();
+  const [localError, setLocalError] = useState<string | null>(null);
+
+  const validate = () => {
+    const missing: string[] = [];
+    if (!email.trim()) missing.push('Email');
+    if (!password) missing.push('Password');
+    if (missing.length) {
+      setLocalError(missing.length === 2 ? 'Email and password are required.' : `${missing[0]} is required.`);
+      return false;
+    }
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+      setLocalError('Please enter a valid email address.');
+      return false;
+    }
+    setLocalError(null);
+    return true;
+  };
 
   const handleLogin = async () => {
+    if (!validate()) return;
     try {
       await login(email, password);
     } catch (e) {
@@ -49,9 +67,9 @@ export const LoginScreen: React.FC = () => {
             Welcome Back
           </Text>
 
-          {error && (
+          {(localError || error) && (
             <Text style={[styles.errorText, { color: theme.errorColor }]}>
-              {error}
+              {localError || error}
             </Text>
           )}
 
