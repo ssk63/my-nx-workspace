@@ -26,10 +26,17 @@ npx nx serve server
 ```
 The server will be available at http://localhost:3001
 
+4. Run the mobile app:
+```bash
+npx nx run mobile:start
+```
+This will start the Expo development server. Scan the QR code with your device (Expo Go), or press `i` for iOS simulator, `a` for Android emulator, or `w` for web browser.
+
 ## Project Structure
 
 - `apps/web` - React web application
 - `apps/server` - Backend server
+- `apps/mobile` - Expo React Native mobile app
 - `libs/personal-voice` - Shared library for personal voice functionality
 - `libs/shared` - Common utilities and components
 
