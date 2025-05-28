@@ -24,7 +24,7 @@ The web app will be available at http://localhost:4200
 ```bash
 npx nx serve server
 ```
-The server will be available at http://localhost:3000
+The server will be available at http://localhost:3001
 
 ## Project Structure
 
