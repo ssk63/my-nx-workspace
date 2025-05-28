@@ -93,3 +93,8 @@ If the frontend cannot connect to the API:
 1. Make sure the API is running at http://localhost:3001
 2. Check the browser console for CORS errors
 3. Verify that the API URL is correctly configured in your application
+
+## Project Documentation
+
+- [Server README](server/README.md): Backend API, authentication, multi-tenancy, theming, and database setup.
+- [Mobile App README](apps/mobile/README.md): Expo app, registration/login, profile editing, tenant theming, and development scripts.

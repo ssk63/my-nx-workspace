@@ -1,5 +1,7 @@
 # Mobile App
 
+_See the [root README](../../README.md) for monorepo setup and Nx workspace usage._
+
 This is a React Native mobile application built with Expo in an Nx workspace.
 
 ## Getting Started
@@ -60,6 +62,7 @@ apps/mobile/
 - **TypeScript support**
 - **Status bar customization**
 - **Clean and minimal setup**
+- **Profile editing:** Users can update their name and avatar from the Profile screen (with image picker and upload).
 
 ## Theming & Multi-Tenant Flow
 

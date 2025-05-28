@@ -1,6 +1,8 @@
 # PersonalVoice API Service
 
-A professional, scalable, multi-tenant backend API service built with Node.js, Express, and TypeScript. This service provides a robust foundation for white-label applications, featuring advanced features like multi-tenancy, authentication, and customizable branding.
+_See the [root README](../README.md) for monorepo setup and Nx workspace usage._
+
+A professional, scalable, multi-tenant backend API service built with Node.js, Express, and TypeScript. This service provides a robust foundation for white-label applications, featuring advanced features like multi-tenancy, authentication, customizable branding, and user profile management.
 
 ## Key Features
 
@@ -282,6 +284,13 @@ The application supports white-labeling through:
 - `PUT /api/personal-voices/:id` - Update a personal voice
 - `DELETE /api/personal-voices/:id` - Delete a personal voice
 
+### Profile
+- `GET /api/users/me` — Get current user profile
+- `PATCH /api/users/me` — Update profile (firstName, lastName, avatarUrl)
+
+### Theming
+- `GET /api/themes` — Get current tenant's theme (requires tenant slug in headers)
+
 ## Development Guidelines
 
 ### Multi-tenant Development
@@ -389,3 +398,10 @@ Errors are handled at the service layer and propagated up to controllers, which 
 - Drizzle Kit - Database migration tools
 - ESLint - Code linting
 - Various type definitions for TypeScript 
+
+## Modular Structure
+
+- `src/app/features/` — Feature modules (auth, users, tenants, themes, etc.)
+- `src/app/services/` — Business logic and data access
+- `src/app/routes/` — Route definitions
+- `src/app/middleware/` — Express middleware (auth, error handling, etc.) 
