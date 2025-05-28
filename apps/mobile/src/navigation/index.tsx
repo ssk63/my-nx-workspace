@@ -4,7 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import TenantSelectionScreen from '../screens/TenantSelectionScreen';
 import { LoginScreen } from '../screens/LoginScreen';
 import { RegisterScreen } from '../screens/RegisterScreen';
-import HomeScreen from '../screens/HomeScreen';
+import { MainTab } from './MainTab';
 import { useAuth } from '../contexts/AuthContext';
 import { useTenant } from '../contexts/TenantContext';
 
@@ -12,7 +12,7 @@ export type RootStackParamList = {
   TenantSelection: undefined;
   Login: undefined;
   Register: undefined;
-  Home: undefined;
+  MainTab: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -32,7 +32,7 @@ const RootNavigator = () => {
         ) : !tenant ? (
           <Stack.Screen name="TenantSelection" component={TenantSelectionScreen} />
         ) : (
-          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="MainTab" component={MainTab} />
         )}
       </Stack.Navigator>
     </NavigationContainer>

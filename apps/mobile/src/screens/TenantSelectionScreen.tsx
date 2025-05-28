@@ -28,7 +28,7 @@ const TenantSelectionScreen = () => {
     setThemeLoading(true);
     setThemeError(null);
     try {
-      const res = await fetch(`${API_URL}/themes/`, {
+      const res = await fetch(`${API_URL}/themes`, {
         headers: {
           Authorization: `Bearer ${token}`,
           'x-tenant-slug': tenantSlug,
@@ -51,7 +51,7 @@ const TenantSelectionScreen = () => {
     if (!loading && tenants.length === 1 && token) {
       setTenant(tenants[0]);
       fetchAndSetTheme(tenants[0].slug, token).then(() => {
-        navigation.navigate('Home');
+        navigation.navigate('MainTab');
       });
     }
   }, [loading, tenants, token, setTenant, fetchAndSetTheme, navigation]);
@@ -77,7 +77,7 @@ const TenantSelectionScreen = () => {
             if (!token) return;
             await setTenant(item);
             await fetchAndSetTheme(item.slug, token);
-            if (!themeError) navigation.navigate('Home');
+            if (!themeError) navigation.navigate('MainTab');
           }}>
             <Text style={styles.tenantName}>{item.name}</Text>
             <Text style={styles.tenantSlug}>{item.slug}</Text>

@@ -3,6 +3,7 @@ import { ThemeService } from '../services/theme.service';
 import { authenticate } from '../../auth/middleware/auth.middleware';
 import { ROLES } from '../../../db/schemas/auth.schema';
 import { Tenant } from '../../tenants/types/tenant.types';
+import { tenantMiddleware } from '../../tenants/middleware/tenant.middleware';
 
 declare module 'express' {
   interface Request {
@@ -29,7 +30,7 @@ const requireAdmin = (req: Request, res: Response, next: NextFunction) => {
 };
 
 // Apply middleware
-router.use(authenticate, requireTenant);
+router.use(authenticate, tenantMiddleware, requireTenant);
 
 // Routes
 router.get('/', async (req: Request, res: Response) => {

@@ -14,6 +14,7 @@ interface AuthContextType {
   register: (data: { email: string; password: string; firstName: string; lastName: string }) => Promise<boolean>;
   logout: () => Promise<void>;
   clearError: () => void;
+  updateProfile: (data: { firstName?: string; lastName?: string; avatarUrl?: string }) => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -29,6 +30,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const load = async () => {
       const t = await AsyncStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
       if (t) setToken(t);
+      const u = await AsyncStorage.getItem(STORAGE_KEYS.USER_DATA);
+      if (u) setUser(JSON.parse(u));
     };
     load();
   }, []);
@@ -81,8 +84,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setTenant(null);
   };
 
+  const updateProfile = async (data: { firstName?: string; lastName?: string; avatarUrl?: string }) => {
+    if (!token) throw new Error('Not authenticated');
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await axios.patch(`${API_URL}/users/me`, data, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setUser(res.data);
+      await AsyncStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(res.data));
+      return true;
+    } catch (e: any) {
+      setError(e?.response?.data?.message || 'Profile update failed');
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, loading, error, login, register, logout, clearError: () => setError(null) }}>
+    <AuthContext.Provider value={{ user, token, loading, error, login, register, logout, clearError: () => setError(null), updateProfile }}>
       {children}
     </AuthContext.Provider>
   );

@@ -4,8 +4,9 @@ import crypto from 'crypto';
 import { db } from '../../../db';
 import { users, userTenants, ROLES } from '../../../db/schemas/auth.schema';
 import { sendPasswordResetEmail } from './email.service';
-import { eq, and, gt } from 'drizzle-orm';
+import { eq, and, gt, inArray } from 'drizzle-orm';
 import { LoginDto, RegisterDto, ForgotPasswordDto, ResetPasswordDto, AuthResponse, User } from '../types/user.types';
+import { tenants as tenantsTable } from '../../../db/schemas/tenants.schema';
 
 const JWT_SECRET = process.env['JWT_SECRET'] || 'changeme';
 const JWT_REFRESH_SECRET = process.env['JWT_REFRESH_SECRET'] || 'refresh_me';
@@ -141,18 +142,28 @@ async function getUserWithTenants(userId: string): Promise<User> {
   const user = (await db.select().from(users).where(eq(users.id, userId)))[0];
   const userTenantRelations = await db.select().from(userTenants).where(eq(userTenants.userId, userId));
 
+  // Fetch all tenantIds
+  const tenantIds = userTenantRelations.map(ut => ut.tenantId);
+  const tenantRecords = tenantIds.length > 0
+    ? await db.select().from(tenantsTable).where(inArray(tenantsTable.id, tenantIds))
+    : [];
+
   return {
     id: user.id,
     firstName: user.firstName,
     lastName: user.lastName,
     email: user.email,
     role: user.role,
-    tenants: userTenantRelations.map(ut => ({
-      id: ut.id,
-      tenantId: ut.tenantId,
-      role: ut.role,
-      isDefault: ut.isDefault
-    })),
+    tenants: userTenantRelations.map(ut => {
+      const tenant = tenantRecords.find(t => t.id === ut.tenantId);
+      return {
+        id: ut.id,
+        tenantId: ut.tenantId,
+        slug: tenant?.slug,
+        role: ut.role,
+        isDefault: ut.isDefault
+      };
+    }),
     createdAt: user.createdAt,
     updatedAt: user.updatedAt
   };

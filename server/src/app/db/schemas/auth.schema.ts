@@ -24,6 +24,7 @@ export const users = pgTable('users', {
   resetTokenExpires: timestamp('reset_token_expires'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  avatarUrl: text('avatar_url'),
 });
 
 export const userTenants = pgTable('user_tenants', {

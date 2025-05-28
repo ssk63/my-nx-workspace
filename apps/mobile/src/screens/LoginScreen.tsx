@@ -29,10 +29,7 @@ export const LoginScreen: React.FC = () => {
 
   const handleLogin = async () => {
     try {
-      const success = await login(email, password);
-      if (success) {
-        navigation.navigate('TenantSelection');
-      }
+      await login(email, password);
     } catch (e) {
       console.error(e);
     }

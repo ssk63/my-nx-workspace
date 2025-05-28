@@ -1,6 +1,6 @@
 import type { Theme } from '../types/theme.types';
 
-export const API_URL = 'http://localhost:3000/api';
+export const API_URL = 'http://localhost:3001/api';
 
 export const STORAGE_KEYS = {
   AUTH_TOKEN: '@auth_token',
